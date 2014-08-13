@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<body>
+
+	<div id="gallery">
+		
+	</div>	
+
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+	<script src="./assets/galereya/js/jquery.galereya.min.js"></script>
+	<script>
+		var host = 'https://googledrive.com/host/0B4MkiRPnlC9uVUoxd0hWQkRpajg',
+			links_file = '/_paths/_links.json',
+			links_callback = 'callback';
+
+		$(document).ready(function () {
+			$.ajax({
+				url: host + '/' + links_file,
+				jsonpCallback: links_callback,
+				dataType: "jsonp",
+				success: function (albuns) {
+					var data = [];
+					$(albuns).each(function (i, el) {
+						data.push({
+							"lowsrc": host + '/' + el.path + '/' + el.cover,
+							"fullsrc": host + '/' + el.path + '/' + el.cover,
+							"description": el.title,
+							"category": "album"
+						});
+					});
+
+					$('#gallery').galereya({
+						load: function(next) {
+							next(data);
+						}
+					});
+				}
+			});
+		});
+	</script>
+</body>
+</html>
