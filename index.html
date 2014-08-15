@@ -14,25 +14,43 @@
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 	<script src="./assets/galereya/js/jquery.galereya.js"></script>
 	<script>
+		function getQueryStrings() { 
+			var assoc  = {};
+			var decode = function (s) { return decodeURIComponent(s.replace(/\+/g, " ")); };
+			var queryString = location.search.substring(1); 
+			var keyValues = queryString.split('&'); 
+
+			for(var i in keyValues) { 
+				var key = keyValues[i].split('=');
+				if (key.length > 1) {
+					assoc[decode(key[0])] = decode(key[1]);
+				}
+			} 
+			return assoc; 
+		} 
 		var host = 'https://googledrive.com/host/0B4MkiRPnlC9uM001Xy04WEhmTEU',
-			links_file = '/_paths/_links.json',
-			links_callback = 'callback';
+			query = getQueryStrings(),
+			links_file = '/_paths/' + (query['path'] ? query['path'] + '.json' : '_links.json');
 
 		$(document).ready(function () {
 			$.ajax({
 				// url: host + '/' + links_file,
-				url: 'http://dev/gps/backup/_paths/_links.json',
-				jsonpCallback: links_callback,
+				url: 'http://dev/gps/backup' + links_file,
+				jsonpCallback: 'callback',
 				dataType: "jsonp",
-				success: function (albuns) {
+				success: function (album) {
 					var data = [];
-					$(albuns).each(function (i, el) {
+					var photos = album.items || album;
+					$(photos).each(function (i, el) {
+						var path = el.path || query['path'],
+							img = el.cover || el.download_link.split('/').pop();
 						data.push({
-							"lowsrc": host + '/thumbs/' + el.path + '/' + el.cover,
-							"fullsrc": host + '/full/' + el.path + '/' + el.cover,
-							"title": el.title,
-							"category": "album",
-							"data": { "path": el.path }
+							"lowsrc": host + '/thumbs/' + path + '/' + img,
+							"fullsrc": host + '/full/' + path + '/' + img,
+							"title": el.title || '',
+							"description": el.description || '',
+							"category": el.author ? "photo" : "album",
+							"data": el.author ? { "author": el.author, "date": el.date, "likes": el.likes } : { "path": el.path }
 						});
 					});
 
