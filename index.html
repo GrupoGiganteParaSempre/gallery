@@ -3,39 +3,52 @@
 <head>
 	<meta charset="UTF-8">
 	<title>Document</title>
+	<link rel="stylesheet" href="assets/galereya/css/jquery.galereya.css">
 </head>
 <body>
 
-	<div id="gallery">
+	<div id="galereya">
 		
 	</div>	
 
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-	<script src="./assets/galereya/js/jquery.galereya.min.js"></script>
+	<script src="./assets/galereya/js/jquery.galereya.js"></script>
 	<script>
-		var host = 'https://googledrive.com/host/0B4MkiRPnlC9uVUoxd0hWQkRpajg',
+		var host = 'https://googledrive.com/host/0B4MkiRPnlC9uM001Xy04WEhmTEU',
 			links_file = '/_paths/_links.json',
 			links_callback = 'callback';
 
 		$(document).ready(function () {
 			$.ajax({
-				url: host + '/' + links_file,
+				// url: host + '/' + links_file,
+				url: 'http://dev/gps/backup/_paths/_links.json',
 				jsonpCallback: links_callback,
 				dataType: "jsonp",
 				success: function (albuns) {
 					var data = [];
 					$(albuns).each(function (i, el) {
 						data.push({
-							"lowsrc": host + '/' + el.path + '/' + el.cover,
-							"fullsrc": host + '/' + el.path + '/' + el.cover,
-							"description": el.title,
-							"category": "album"
+							"lowsrc": host + '/thumbs/' + el.path + '/' + el.cover,
+							"fullsrc": host + '/full/' + el.path + '/' + el.cover,
+							"title": el.title,
+							"category": "album",
+							"data": { "path": el.path }
 						});
 					});
 
-					$('#gallery').galereya({
+					$('#galereya').galereya({
+						wave: false,
+						disableSliderOnClick: true,
+						cellFadeInSpeed: 0,
+
 						load: function(next) {
 							next(data);
+						},
+						onCellClick: function (e) {
+							xxx = this;
+							yyy = e;
+							console.log(this);
+							alert('feito');
 						}
 					});
 				}

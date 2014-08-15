@@ -237,23 +237,21 @@
          * @returns {} - Modified item
          */
         var addInfo = function (info) {
-            var item = {
-                "lowsrc": info.lowsrc || '',
-                "fullsrc": info.fullsrc || '',
-                "title": info.title || '',
-                "description": info.description || '',
-                "category": info.category || ''
-            };
+            info.lowsrc = info.lowsrc || '';
+            info.fullsrc = info.fullsrc || '';
+            info.title = info.title || '';
+            info.description = info.description || '';
+            info.category = info.category || '';
 
-            if (item.category) {
-                item.category = item.category.toLowerCase();
-                if ($.inArray(item.category, categories) === -1) {
-                    categories.push(item.category);
+            if (info.category) {
+                info.category = info.category.toLowerCase();
+                if ($.inArray(info.category, categories) === -1) {
+                    categories.push(info.category);
                 }
             }
 
-            data.push(item);
-            return item;
+            data.push(info);
+            return info;
         };
 
         /**
@@ -299,13 +297,18 @@
                 }
             }
 
-            var $img, title, desc;
+            var $img, title, desc, wrapon, j;
             $imgs.wrapAll('<div class="galereya-grid" />').each(function (i, img) {
                 $img = $(img);
                 title = data[i].title;
                 desc = data[i].description;
+
+                wrapon = $('<div class="galereya-cell" data-index="' + i + '"></div>');
+                if (data[i].data) for (j in data[i].data)
+                    wrapon.data(j, data[i].data[j])
+
                 $img.addClass('galereya-cell-img')
-                    .wrap('<div class="galereya-cell" data-index="' + i + '"></div>')
+                    .wrap(wrapon)
                     .parent()
                     .append('<div class="galereya-cell-desc">\
                                 <div class="galereya-cell-desc-title">' + title + '</div>\
